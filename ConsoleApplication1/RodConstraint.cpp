@@ -40,15 +40,15 @@ float RodConstraint::getCDot(){
 
 vector<Vec2f> RodConstraint::getJacobian(){
 	vector<Vec2f> J;
-	J.push_back(2.f * (m_p1->m_Position - m_p2->m_Position));
-	J.push_back(2.f * (m_p2->m_Position - m_p1->m_Position));
+	J.push_back(2.0 * (m_p1->m_Position - m_p2->m_Position));
+	J.push_back(2.0 * (m_p2->m_Position - m_p1->m_Position));
 	return J;
 }
 
 vector<Vec2f> RodConstraint::getJacobianDot(){
 	vector<Vec2f> JDot;
-	JDot.push_back(2.f * (m_p1->m_Velocity - m_p2->m_Velocity));
-	JDot.push_back(2.f * (m_p2->m_Velocity - m_p1->m_Velocity));
+	JDot.push_back(2.0 * (m_p1->m_Velocity - m_p2->m_Velocity));
+	JDot.push_back(2.0 * (m_p2->m_Velocity - m_p1->m_Velocity));
 	return JDot;
 }
 

@@ -115,7 +115,7 @@ static void init_system(void)
 	float heigthOff = 0.0;
 	float clothDist = 0.2f;
 	int clothWidth = 3;
-	int clothHeight = 3;
+	int clothHeight = 7;
 	int particleID = 0;
 
 	for (int i = 0; i < clothWidth*clothHeight; i++)
@@ -158,6 +158,7 @@ static void init_system(void)
 	{
 		for (int j = 0; j < clothWidth-1; j++)
 		{
+			//constraints.push_back(new RodConstraint(pVector[j + (clothWidth * i)], pVector[j + (clothWidth * i) + 1], clothDist));
 			forces.push_back(new SpringForce(pVector[j + (clothWidth * i)], pVector[j + (clothWidth * i) + 1], clothDist, ks, kd));
 		}
 	}
@@ -167,11 +168,13 @@ static void init_system(void)
 	{
 		constraints.push_back(new LineWireConstraint(pVector[i], 0.5));
 	}
+
+	forces.push_back(new Wall(pVector, -0.5, dt));
 	*/
 	int particleID = 0;
 	pVector.push_back(new Particle(Vec2f(-0.3, 0.5), 1.0f, particleID++));
-	pVector.push_back(new Particle(Vec2f(0.0, 0.3), 1.0f, particleID++));
-	pVector.push_back(new Particle(Vec2f(0.3, 0.5), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(0.2, 0.5), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(0.2, 0.0), 1.0f, particleID++));
 
 	int i, size = pVector.size();
 
@@ -182,14 +185,18 @@ static void init_system(void)
 
 	for (i = 0; i<size; i++)
 	{
-		forces.push_back(new Gravity(pVector[i], Vec2f(0.0, -0.0981)));
+		//forces.push_back(new Gravity(pVector[i], Vec2f(0.0, -0.0981)));
 	}
+	//forces.push_back(new Gravity(pVector[2], Vec2f(0.0, -0.981))); 
 
-	forces.push_back(new SpringForce(pVector[0], pVector[1], 0.1, 2.0, 2.0));
-	forces.push_back(new SpringForce(pVector[1], pVector[2], 0.1, 2.0, 2.0));
-	constraints.push_back(new CircularWireConstraint(pVector[1], Vec2f(0.0, 0.0), 0.3));
+	forces.push_back(new SpringForce(pVector[0], pVector[1], 0.5, 2.0, 2.0));
+	forces.push_back(new SpringForce(pVector[1], pVector[2], 0.5, 2.0, 2.0));
+	//constraints.push_back(new RodConstraint(pVector[1], pVector[2], 0.5));
+	constraints.push_back(new LineWireConstraint(pVector[1], 0.5));
+	//constraints.push_back(new LineWireConstraint(pVector[0], 0.5));
+	//constraints.push_back(new CircularWireConstraint(pVector[1], Vec2f(0.0, 0.0), 0.3));
 	//forces.push_back(new Wall(pVector, -0.6, dt));
-	forces.push_back(new AngularForce(pVector[0], pVector[1], pVector[2], 90, 0.01, 1.0));
+	forces.push_back(new AngularForce(pVector[0], pVector[1], pVector[2], 90, 0.01, 0.5));
 }
 
 /*

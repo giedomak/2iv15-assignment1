@@ -1,4 +1,4 @@
-#include "Particle.h"
+﻿#include "Particle.h"
 #include <vector>
 #include <algorithm>
 #include "Gravity.h"
@@ -39,27 +39,26 @@ void ComputeConstraint(std::vector<Particle*> pVector, std::vector<Constraint*> 
 		Q[i * 2 + 1] = pVector[i]->m_Force[1];
 	}
 
-	//create the C and CDot vectors.
+	//create the C and CDot vectors also the Jacobian Matrices and JacobianDot matrices.
 	//they are calculate in their corresponding constraint classes and put into the vector here.
-	vector<float>C = vector<float>(constraints.size());
-	vector<float>CDot = vector<float>(constraints.size());
-	for (int i = 0; i < constraints.size(); i++)
-	{
-		C[i] = constraints[i]->getC();
-		CDot[i] = constraints[i]->getCDot();
-	}
-
-	//the creation of the Jacobian Matrices and JacobianDot matrices.
 	//they are also calculated in their corresponding classes. they are placed int he jacobian matrix for the correct particle.
 	//the JT is the transpose of J.
+
+	//Loop over the constraints, letting each evaluate its own portion of C, CDot, J and JDot.Each
+	//constraint points to one or more matrix blocks that receive its contributions to the global
+	//matrices. source*
+	vector<float>C = vector<float>(constraints.size());
+	vector<float>CDot = vector<float>(constraints.size());
 	vector<vector<float>> J = vector<vector<float>>(constraints.size(), vector<float>(pVector.size() * 2));
 	vector<vector<float>> JDot = vector<vector<float>>(constraints.size(), vector<float>(pVector.size() * 2));
 	vector<vector<float>> JT = vector<vector<float>>((pVector.size() * 2), vector<float>(constraints.size()));
 	for (int i = 0; i < constraints.size(); i++)
 	{
+		C[i] = constraints[i]->getC();
+		CDot[i] = constraints[i]->getCDot();
 		vector<Vec2f> jac = constraints[i]->getJacobian();
 		vector<Vec2f> jacDot = constraints[i]->getJacobianDot();
-		vector<Particle*> particles = constraints[i]->getParticles();
+		vector<Particle*> particles = constraints[i]->getParticles(); 
 		for (int j = 0; j < particles.size(); j++)
 		{
 			for (int k = 0; k < 2; k++)
@@ -73,6 +72,8 @@ void ComputeConstraint(std::vector<Particle*> pVector, std::vector<Constraint*> 
 
 	//We multiply J and W, for this we use the vector multiplier in LinearSolver.cpp
 	//We do the same for the resulting JW and JT
+	//Form the right - hand - side vector of equation 11.
+	//(equation 11: JWJTLamba = -JDotqDot - JWQ -ksC - kdCDot)*
 	vector<vector<float>>JW = vector<vector<float>>(constraints.size(), vector<float>(pVector.size() * 2));
 	vector<vector<float>>JWJT = vector<vector<float>>(constraints.size(), vector<float>(pVector.size() * 2));
 	JW = VectorMultiplication(J, W);
@@ -110,6 +111,7 @@ void ComputeConstraint(std::vector<Particle*> pVector, std::vector<Constraint*> 
 	double* lambda = new double[constraints.size()];
 
 	//stepsize is 100, which is standard
+	//Invoke the conjugate gradient solver to obtain the Lagrange multiplier vector, lambda.*
 	int stepSize = 100;
 	ConjGrad(constraints.size(), ImJWJT, lambda, JWJTLambdaDouble, 1e-30f, &stepSize);
 
@@ -121,6 +123,8 @@ void ComputeConstraint(std::vector<Particle*> pVector, std::vector<Constraint*> 
 	}
 
 	//We can now calculate the resulting force QHat, we do this by multiplying Lambda with JT
+	//Multiply lambda by JT to obtain the global constraint force vector, and scatter this force to the
+	//particles. source*
 	vector<float>Qhat = vector<float>(constraints.size());
 	Qhat = VectorMultiplication(JT, lambdaFloat);
 
@@ -132,4 +136,5 @@ void ComputeConstraint(std::vector<Particle*> pVector, std::vector<Constraint*> 
 			pVector[i]->m_Force[j] += Qhat[2 * i + j];
 		}
 	}
+	//source* -> notesf.pdf (summary)
 }
