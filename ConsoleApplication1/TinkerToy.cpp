@@ -172,9 +172,9 @@ static void init_system(void)
 	forces.push_back(new Wall(pVector, -0.5, dt));
 	*/
 	int particleID = 0;
-	pVector.push_back(new Particle(Vec2f(-0.3, 0.5), 1.0f, particleID++));
-	pVector.push_back(new Particle(Vec2f(0.2, 0.5), 1.0f, particleID++));
-	pVector.push_back(new Particle(Vec2f(0.2, 0.0), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(-0.1, -0.4), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f( -0.05, 0.0), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(0.4 , -0.1), 1.0f, particleID++));
 
 	int i, size = pVector.size();
 
@@ -191,12 +191,12 @@ static void init_system(void)
 
 	forces.push_back(new SpringForce(pVector[0], pVector[1], 0.5, 2.0, 2.0));
 	forces.push_back(new SpringForce(pVector[1], pVector[2], 0.5, 2.0, 2.0));
-	//constraints.push_back(new RodConstraint(pVector[1], pVector[2], 0.5));
-	constraints.push_back(new LineWireConstraint(pVector[1], 0.5));
+	//constraints.push_back(new RodConstraint(pVector[0], pVector[1], 0.5));
+	//constraints.push_back(new LineWireConstraint(pVector[1], 0.5));
 	//constraints.push_back(new LineWireConstraint(pVector[0], 0.5));
-	//constraints.push_back(new CircularWireConstraint(pVector[1], Vec2f(0.0, 0.0), 0.3));
+	constraints.push_back(new CircularWireConstraint(pVector[1], Vec2f(0.0, 0.0), 0.05));
 	//forces.push_back(new Wall(pVector, -0.6, dt));
-	forces.push_back(new AngularForce(pVector[0], pVector[1], pVector[2], 90, 0.01, 0.5));
+	forces.push_back(new AngularForce(pVector[0], pVector[1], pVector[2], 160, 0.1, 0.5));
 }
 
 /*

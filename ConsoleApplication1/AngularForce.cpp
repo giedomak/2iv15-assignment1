@@ -46,6 +46,7 @@ void AngularForce::apply()
 {
 	Vec2f posdif12 = (m_p1->m_Position - m_p2->m_Position);
 	Vec2f posdif32 = (m_p3->m_Position - m_p2->m_Position);
+
 	// length of both vectors
 	float length12 = sqrt(posdif12[0] * posdif12[0] + posdif12[1] * posdif12[1]);
 	float length32 = sqrt(posdif32[0] * posdif32[0] + posdif32[1] * posdif32[1]);
@@ -64,7 +65,6 @@ void AngularForce::apply()
 
 	// Here's the only invocation of the heavy function.
 	// It's a good idea to check explicitly if cos2 is within [-1 .. 1] range
-
 	const float pi = 3.141592f;
 
 	float alpha2 =
@@ -108,21 +108,11 @@ void AngularForce::apply()
 	}
 
 
-	Vec2f veldif = ((m_p1->m_Velocity+m_p3->m_Velocity) - m_p2->m_Velocity);
-	//Vec2f veldif32 = (m_p3->m_Velocity - m_p2->m_Velocity);
-	float dotProduct = vecDotNew(veldif, (posdif12+posdif32));
-
-	cout << "rest angle: " << restAngle << endl;
-	//m_p1->m_Force -= (m_ks*restAngle);
-	//m_p1->m_Force += Vec2f((posdif12 / length12)*(m_ks*restAngle));
-	//m_p3->m_Force[0] -= ((m_ks*restAngle) / length32*posdif32[1]);
-	//m_p3->m_Force[1] += ((m_ks*restAngle) / length32*posdif32[0]);
-	//m_p1->m_Force -= Vec2f(((m_ks*restAngle) / (length12))*posdif12[1], 0);
-	//m_p1->m_Force += Vec2f(((m_ks*restAngle) / (length12 * 2))*posdif12[1], -((m_ks*restAngle) / (length12 * 2))* posdif12[0]);
-	//m_p2->m_Force -= Vec2f(posdif32[1] * (m_ks*restAngle) / (length32 * 2), -posdif32[0] * (m_ks*restAngle) / (length32 * 2));
-
-	m_p1->m_Force[0] -= ((m_ks*restAngle) / length12*posdif12[1]);
-	m_p1->m_Force[1] += ((m_ks*restAngle) / length12*posdif12[0]);
-	m_p3->m_Force[0] += ((m_ks*restAngle) / length32*posdif32[1]);
-	m_p3->m_Force[1] -= ((m_ks*restAngle) / length32*posdif32[0]);
+	Vec2f veldif12 = (m_p1->m_Velocity - m_p2->m_Velocity);
+	Vec2f veldif32 = (m_p3->m_Velocity - m_p2->m_Velocity);
+	
+	m_p1->m_Force[0] -= ((m_ks*restAngle) / length12*posdif12[1]) + (m_kd*veldif12[0]);
+	m_p1->m_Force[1] += ((m_ks*restAngle) / length12*posdif12[0]) - (m_kd*veldif12[1]);
+	m_p3->m_Force[0] += ((m_ks*restAngle) / length32*posdif32[1]) - (m_kd*veldif32[0]);
+	m_p3->m_Force[1] -= ((m_ks*restAngle) / length32*posdif32[0]) + (m_kd*veldif32[1]);
 }

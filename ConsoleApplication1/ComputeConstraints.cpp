@@ -10,6 +10,10 @@ using namespace std;
 
 void ComputeConstraint(std::vector<Particle*> pVector, std::vector<Constraint*> constraints)
 {
+	if (constraints.empty())
+	{
+		return;
+	}
 	//strength and damping factor
 	float ks = 60.0f;
 	float kd = 5.0f;
