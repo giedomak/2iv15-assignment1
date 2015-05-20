@@ -15,6 +15,7 @@
     <ClCompile Include="CalculateForces.cpp" />
     <ClCompile Include="CircularWireConstraint.cpp" />
     <ClCompile Include="ComputeConstraints.cpp" />
+    <ClCompile Include="DragForce.cpp" />
     <ClCompile Include="Gravity.cpp" />
     <ClCompile Include="imageio.cpp" />
     <ClCompile Include="linearSolver.cpp" />
@@ -33,6 +34,7 @@
     <ClInclude Include="AngularForce.h" />
     <ClInclude Include="CircularWireConstraint.h" />
     <ClInclude Include="Constraint.h" />
+    <ClInclude Include="DragForce.h" />
     <ClInclude Include="Force.h" />
     <ClInclude Include="Gravity.h" />
     <ClInclude Include="imageio.h" />

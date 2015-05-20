@@ -66,6 +66,9 @@
     <ClCompile Include="AngularForce.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DragForce.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RodConstraint.h">
@@ -108,6 +111,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AngularForce.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DragForce.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
