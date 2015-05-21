@@ -117,7 +117,7 @@ void ComputeConstraint(std::vector<Particle*> pVector, std::vector<Constraint*> 
 	//stepsize is 100, which is standard
 	//Invoke the conjugate gradient solver to obtain the Lagrange multiplier vector, lambda.*
 	int stepSize = 100;
-	ConjGrad(constraints.size(), ImJWJT, lambda, JWJTLambdaDouble, 1e-30f, &stepSize);
+	ConjGrad(constraints.size(), ImJWJT, lambda, JWJTLambdaDouble, 1.0f / 1000.0f, &stepSize);
 
 	//turn the resulting Lambda back into a float vector.
 	vector<float>lambdaFloat = vector<float>(constraints.size());

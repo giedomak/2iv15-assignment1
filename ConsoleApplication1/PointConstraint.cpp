@@ -23,7 +23,7 @@ void PointConstraint::draw()
 	glEnd();
 }
 
-// return the c: C(x, y) = (x-xp)^2 + (y - yp)^2
+// return the c: C(x,y) = (x-xc)^2-(y-yc)^2
 float PointConstraint::getC()
 {
 	Vec2f posdif = (m_p->m_Position - m_Point);
@@ -42,7 +42,6 @@ vector<Vec2f> PointConstraint::getJacobian(){
 	//a vector, only 1 now, might implement multiple particles
 	vector<Vec2f> J;
 	Vec2f posdif = (m_p->m_Position - m_Point);
-	Vec2f veldif = (m_p->m_Velocity);
 	J.push_back(Vec2f(2 * posdif[0], 2 * posdif[1]));
 	return J;
 }

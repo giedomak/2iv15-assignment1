@@ -6,7 +6,7 @@
 //ks = strength
 //kd = damping
 //dist = resting distance
-SpringForce::SpringForce(Particle *p1, Particle * p2, double dist, double ks, double kd) :
+SpringForce::SpringForce(Particle *p1, Particle * p2, double dist, double ks, double kd, int colour) :
   m_p1(p1), m_p2(p2), m_dist(dist), m_ks(ks), m_kd(kd) {}
 
 

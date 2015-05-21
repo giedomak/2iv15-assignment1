@@ -69,6 +69,12 @@
     <ClCompile Include="DragForce.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WallLeft.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WallRight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RodConstraint.h">
@@ -114,6 +120,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DragForce.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WallLeft.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WallRight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

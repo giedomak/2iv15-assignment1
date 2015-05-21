@@ -3,7 +3,8 @@
 #include <iostream>
 using namespace std;
 #include "Gravity.h"
-#include "Wall.h"
+#include "WallLeft.h"
+#include "WallRight.h"
 #include <algorithm>
 #include <list>
 #include <Windows.h>
@@ -91,6 +92,163 @@ static void clear_data ( void )
 	}
 }
 
+static void init_systemSpring(void)
+{
+	float distance;
+	float strength;
+	float damping;
+	cout << "give distance between 2 particles please" << endl;
+	cin >> distance;
+	cout << "give spring strenght please" << endl;
+	cin >> strength;
+	cout << "give a spring damping please" << endl;
+	cin >> damping;
+	level_start_time = timeGetTime();
+
+	int particleID = 0;
+	pVector.push_back(new Particle(Vec2f(0.0, 0.7), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(0.0, 0.1), 1.0f, particleID++));
+
+	int i, size = pVector.size();
+
+	for (i = 0; i<size; i++)
+	{
+		mouses.push_back(new MouseForce(pVector[i], pVector[i]->m_Velocity, 0.5, 0.5));
+	}
+
+	for (i = 0; i<size; i++)
+	{
+		forces.push_back(new Gravity(pVector[i], Vec2f(0.0, -0.0981)));
+	}
+
+	constraints.push_back(new CircularWireConstraint(pVector[0], Vec2f(0.0,0.8), 0.1));
+	forces.push_back(new SpringForce(pVector[0], pVector[1], distance, strength, damping, 0));
+
+	for (i = 0; i<size; i++)
+	{
+		forces.push_back(new DragForce(pVector[i], 0.99));
+	}
+}
+
+static void init_systemRod(void)
+{
+	float distance;
+	cout << "give distance between 2 particles please" << endl;
+	cin >> distance;
+	level_start_time = timeGetTime();
+
+	int particleID = 0;
+	pVector.push_back(new Particle(Vec2f(0.0, 0.7), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(0.0, 0.7-distance), 1.0f, particleID++));
+
+	int i, size = pVector.size();
+
+	for (i = 0; i<size; i++)
+	{
+		mouses.push_back(new MouseForce(pVector[i], pVector[i]->m_Velocity, 0.5, 0.5));
+	}
+
+	for (i = 0; i<size; i++)
+	{
+		forces.push_back(new Gravity(pVector[i], Vec2f(0.0, -0.0981)));
+	}
+
+	constraints.push_back(new CircularWireConstraint(pVector[0], Vec2f(0.0, 0.8), 0.1));
+	constraints.push_back(new RodConstraint(pVector[0], pVector[1], distance));
+
+	for (i = 0; i<size; i++)
+	{
+		forces.push_back(new DragForce(pVector[i], 0.99));
+	}
+}
+
+static void init_systemLine(void)
+{
+	float height;
+	int wall;
+	cout << "give the height of the line please" << endl;
+	cin >> height;
+	cout << "should there be a wall? (0 no, 1 yes on the left, 2 yes on both sides)" << endl;
+	cin >> wall;
+	level_start_time = timeGetTime();
+
+	int particleID = 0;
+	pVector.push_back(new Particle(Vec2f(0.0, height), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(0.0, -1.1), 1.0f, particleID++));
+
+	int i, size = pVector.size();
+
+	for (i = 0; i<size; i++)
+	{
+		mouses.push_back(new MouseForce(pVector[i], pVector[i]->m_Velocity, 0.5, 0.5));
+	}
+
+	for (i = 0; i<size; i++)
+	{
+		forces.push_back(new Gravity(pVector[i], Vec2f(0.0, -0.0981)));
+	}
+
+	constraints.push_back(new LineWireConstraint(pVector[0], height));
+	forces.push_back(new SpringForce(pVector[0], pVector[1], 0.5, 3, 1, 0));
+
+	if (wall == 0)
+	{
+
+	}
+	else if (wall == 1)
+	{
+		float xPos1;
+		cout << "please give the x position of the left wall";
+		cin >> xPos1;
+		forces.push_back(new WallLeft(pVector, xPos1, dt));
+	}
+	else if (wall == 2)
+	{
+		float xPos1;
+		float xPos2;
+		cout << "please give the x position of the left wall";
+		cin >> xPos1;
+		cout << "please give the x position of the right wall";
+		cin >> xPos2;
+		forces.push_back(new WallLeft(pVector, xPos1, dt));
+		forces.push_back(new WallRight(pVector, xPos2, dt)); 
+	}
+
+	for (i = 0; i<size; i++)
+	{
+		forces.push_back(new DragForce(pVector[i], 0.99));
+	}
+}
+
+static void init_systemCircle(void)
+{
+	int angle;
+	level_start_time = timeGetTime();
+
+	int particleID = 0;
+	pVector.push_back(new Particle(Vec2f(0.0, 0.5), 1.0f, particleID++));
+
+	int i, size = pVector.size();
+
+	for (i = 0; i<size; i++)
+	{
+		mouses.push_back(new MouseForce(pVector[i], pVector[i]->m_Velocity, 0.5, 0.5));
+	}
+
+	for (i = 0; i<size; i++)
+	{
+		forces.push_back(new Gravity(pVector[i], Vec2f(0.0, -0.0981)));
+	}
+
+	constraints.push_back(new CircularWireConstraint(pVector[0], Vec2f(0.0, 0.0), 0.5));
+
+	for (i = 0; i<size; i++)
+	{
+		forces.push_back(new DragForce(pVector[i], 0.99));
+	}
+
+}
+
 static void init_systemAngle(void)
 {
 	int angle;
@@ -99,9 +257,9 @@ static void init_systemAngle(void)
 	level_start_time = timeGetTime();
 
 	int particleID = 0;
-	pVector.push_back(new Particle(Vec2f(-0.1, -0.4), 1.0f, particleID++));
-	pVector.push_back(new Particle(Vec2f( -0.05, 0.0), 1.0f, particleID++));
-	pVector.push_back(new Particle(Vec2f(0.4 , -0.1), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(-0.2, 0.0), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f( 0.0, 0.4), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(0.2 , 0.0), 1.0f, particleID++));
 
 	int i, size = pVector.size();
 
@@ -116,14 +274,9 @@ static void init_systemAngle(void)
 	}
 	//forces.push_back(new Gravity(pVector[2], Vec2f(0.0, -0.981))); 
 
-	forces.push_back(new SpringForce(pVector[0], pVector[1], 0.5, 2.0, 2.0));
-	forces.push_back(new SpringForce(pVector[1], pVector[2], 0.5, 2.0, 2.0));
-	//constraints.push_back(new RodConstraint(pVector[0], pVector[1], 0.5)); 
-	//constraints.push_back(new RodConstraint(pVector[1], pVector[2], 0.5));
-	//constraints.push_back(new LineWireConstraint(pVector[1], 0.5));
-	//constraints.push_back(new LineWireConstraint(pVector[0], 0.5));
-	constraints.push_back(new CircularWireConstraint(pVector[1], Vec2f(0.0, 0.0), 0.05));
-	//forces.push_back(new Wall(pVector, -0.6, dt));
+	forces.push_back(new SpringForce(pVector[0], pVector[1], 0.5, 2.0, 2.0, 0));
+	forces.push_back(new SpringForce(pVector[1], pVector[2], 0.5, 2.0, 2.0, 0));
+	constraints.push_back(new CircularWireConstraint(pVector[1], Vec2f(0.0, 0.5), 0.1));
 	forces.push_back(new AngularForce(pVector[0], pVector[1], pVector[2], angle, 0.1, 0.5));
 
 	for (i = 0; i<size; i++)
@@ -132,38 +285,26 @@ static void init_systemAngle(void)
 	}
 }
 
-static void init_systemTest(void)
-{
-	int angle;
-	cout << "drag test" << endl;
-	cin >> angle;
-	level_start_time = timeGetTime();
-
-	int particleID = 0;
-	pVector.push_back(new Particle(Vec2f(-0.1, -0.4), 1.0f, particleID++));
-
-	mouses.push_back(new MouseForce(pVector[0], pVector[0]->m_Velocity, 0.5, 0.5));
-	forces.push_back(new DragForce(pVector[0], 0.99));
-}
 
 static void init_systemCloth(void)
 {
 	const double dist = 0.2;
-	const Vec2f center(0.0, 0.0);
-	const Vec2f offset(dist, 0.0);
-	const Vec2f secondRow(0.0, -0.2);
-	const Vec2f thirdRow(0.0, -0.4);
-	const Vec2f fourthRow(0.0, -0.6);
 
 	level_start_time = timeGetTime();
 
 	int clothWidth;
-	int clothHeight = 7;
+	int clothHeight;
+	int ks;
+	int kd;
 	cout << "please give a particle with and a height for the cloth" << endl;
-	cout << "width: ";
+	cout << "please give width: ";
 	cin >> clothWidth;
-	cout << "height: ";
+	cout << "please give height: ";
 	cin >> clothHeight;
+	cout << "please give spring strength: ";
+	cin >> ks;
+	cout << "please give spring damping: ";
+	cin >> kd;
 	float distance = 0.0;
 	float heigthOff = 0.0;
 	float clothDist = 0.2f;
@@ -171,14 +312,14 @@ static void init_systemCloth(void)
 
 	for (int i = 0; i < clothWidth*clothHeight; i++)
 	{
-	if (i % clothWidth == 0)
-	{
-	heigthOff += 0.2;
-	distance = 0.0;
-	}
+		if (i % clothWidth == 0)
+		{
+			heigthOff += 0.2;
+			distance = 0.0;
+		}
 
-	pVector.push_back(new Particle(Vec2f(-0.3 + distance, 0.7 - heigthOff), 1.0f, particleID++));
-	distance += 0.2;
+		pVector.push_back(new Particle(Vec2f(-0.3 + distance, 0.9 - heigthOff), 1.0f, particleID++));
+		distance += 0.2;
 	}
 	// You shoud replace these with a vector generalized forces and one of
 	// constraints...
@@ -187,7 +328,7 @@ static void init_systemCloth(void)
 
 	for (i = 0; i<size; i++)
 	{
-	mouses.push_back(new MouseForce(pVector[i], pVector[i]->m_Velocity, 0.5, 0.5));
+		mouses.push_back(new MouseForce(pVector[i], pVector[i]->m_Velocity, 0.5, 0.5));
 	}
 
 	for (i = 0; i<size; i++)
@@ -195,38 +336,180 @@ static void init_systemCloth(void)
 		forces.push_back(new Gravity(pVector[i], Vec2f(0.0, -0.0981)));
 	}
 
-	//cloth forces
-	int ks = 5;
-	int kd = 3;
 
-	//forces.push_back(new SpringForce(pVector[1], pVector[2], 0.05, 3, 1));
+	//connect particles to the one next to him vertically
 	for (int i = 0; i < (clothWidth*clothHeight)-clothWidth; i++)
 	{
-	//constraints.push_back(new RodConstraint(pVector[i], pVector[i + clothWidth], clothDist));
-	forces.push_back(new SpringForce(pVector[i], pVector[i+clothWidth], clothDist, ks, kd));
+		forces.push_back(new SpringForce(pVector[i], pVector[i+clothWidth], clothDist, ks, kd, 0));
 	}
+
+	//connect particles with the one below him
 	for (int i = 0; i < clothHeight; i++)
 	{
-	for (int j = 0; j < clothWidth-1; j++)
+		for (int j = 0; j < clothWidth - 1; j++)
+		{
+			forces.push_back(new SpringForce(pVector[j + (clothWidth * i)], pVector[j + (clothWidth * i) + 1], clothDist, ks, kd, 0));
+		}
+	}
+
+	//connects vertically particles with the particle after it's next one
+	for (int i = 0; i < clothHeight; i++)
 	{
-	//constraints.push_back(new RodConstraint(pVector[j + (clothWidth * i)], pVector[j + (clothWidth * i) + 1], clothDist));
-	forces.push_back(new SpringForce(pVector[j + (clothWidth * i)], pVector[j + (clothWidth * i) + 1], clothDist, ks, kd));
+		for (int j = 0; j < clothWidth - 2; j++)
+		{ 
+			forces.push_back(new SpringForce(pVector[j + (i*clothWidth)], pVector[j + 2 + (i*clothWidth)], clothDist*2, ks, kd, 0));
+		}
 	}
+
+	//connect horizontally particles with the particle after it's next one
+	for (int i = 0; i < clothHeight-2; i++)
+	{
+		for (int j = 0; j < clothWidth; j++)
+		{
+			forces.push_back(new SpringForce(pVector[j + (clothWidth*i)], pVector[j + (clothWidth*i)+(clothWidth * 2)], clothDist * 2, ks, kd, 0));
+		}
 	}
+
+	//cross connection left to right
+	float clothDistCross = sqrt(clothDist*clothDist + clothDist*clothDist);
+	for (int i = 0; i < clothWidth-1; i++)
+	{
+		for (int j = 0; j < clothHeight-1 ; j++)
+		{
+			forces.push_back(new SpringForce(pVector[i + (j*clothWidth)], pVector[i+1 + ((j+1)*clothWidth)], clothDistCross, ks, kd, 0));
+		}
+	}
+
+	//cross connection right to left
+	for (int i = 0; i < clothWidth - 1; i++)
+	{
+		for (int j = 0; j < clothHeight - 1; j++)
+		{
+			forces.push_back(new SpringForce(pVector[i+1 + (j*clothWidth)], pVector[i+((j+1)*clothWidth)], clothDistCross, ks, kd, 0));
+		}
+	}
+
 	//cloth constraints.
 
 	for (int i = 0; i < clothWidth; i++)
 	{
-	constraints.push_back(new LineWireConstraint(pVector[i], 0.5));
+		constraints.push_back(new LineWireConstraint(pVector[i], 0.7));
 	}
 
-	forces.push_back(new Wall(pVector, -0.5, dt));
+	forces.push_back(new WallLeft(pVector, -1, dt));
+	forces.push_back(new WallRight(pVector, 1, dt));
 
 	for (i = 0; i<size; i++)
 	{
 		forces.push_back(new DragForce(pVector[i], 0.99));
 	}
 }
+
+static void init_systemFlag(void)
+{
+	const double dist = 0.2;
+
+	level_start_time = timeGetTime();
+
+	int clothWidth = 10;
+	int clothHeight = 6;
+	int ks = 2;
+	int kd = 1;
+	cout << "Welcome, please enjoy the flag" << endl;
+	float distance = 0.0;
+	float heigthOff = 0.0;
+	float clothDist = 0.2f;
+	int particleID = 0;
+
+	for (int i = 0; i < clothWidth*clothHeight; i++)
+	{
+		if (i % clothWidth == 0)
+		{
+			heigthOff += 0.2;
+			distance = 0.0;
+		}
+
+		pVector.push_back(new Particle(Vec2f(-0.3 + distance, 0.9 - heigthOff), 1.0f, particleID++));
+		distance += 0.2;
+	}
+	// You shoud replace these with a vector generalized forces and one of
+	// constraints...
+
+	int i, size = pVector.size();
+
+	for (i = 0; i<size; i++)
+	{
+		mouses.push_back(new MouseForce(pVector[i], pVector[i]->m_Velocity, 0.5, 0.5));
+	}
+
+	for (i = 0; i<size; i++)
+	{
+		forces.push_back(new Gravity(pVector[i], Vec2f(-0.0981, 0.0)));
+	}
+
+
+	//connect particles to the one next to him vertically
+	for (int i = 0; i < (clothWidth*clothHeight) - clothWidth; i++)
+	{
+		forces.push_back(new SpringForce(pVector[i], pVector[i + clothWidth], clothDist, ks, kd, 0));
+	}
+
+	//connect particles with the one below him
+	for (int i = 0; i < clothHeight; i++)
+	{
+		for (int j = 0; j < clothWidth - 1; j++)
+		{
+			forces.push_back(new SpringForce(pVector[j + (clothWidth * i)], pVector[j + (clothWidth * i) + 1], clothDist, ks, kd, 0));
+		}
+	}
+
+	//connects vertically particles with the particle after it's next one
+	for (int i = 0; i < clothHeight; i++)
+	{
+		for (int j = 0; j < clothWidth - 2; j++)
+		{
+			forces.push_back(new SpringForce(pVector[j + (i*clothWidth)], pVector[j + 2 + (i*clothWidth)], clothDist * 2, ks, kd, 0));
+		}
+	}
+
+	//connect horizontally particles with the particle after it's next one
+	for (int i = 0; i < clothHeight - 2; i++)
+	{
+		for (int j = 0; j < clothWidth; j++)
+		{
+			forces.push_back(new SpringForce(pVector[j + (clothWidth*i)], pVector[j + (clothWidth*i) + (clothWidth * 2)], clothDist * 2, ks, kd, 0));
+		}
+	}
+
+	//cross connection left to right
+	float clothDistCross = sqrt(clothDist*clothDist + clothDist*clothDist);
+	for (int i = 0; i < clothWidth - 1; i++)
+	{
+		for (int j = 0; j < clothHeight - 1; j++)
+		{
+			forces.push_back(new SpringForce(pVector[i + (j*clothWidth)], pVector[i + 1 + ((j + 1)*clothWidth)], clothDistCross, ks, kd, 0));
+		}
+	}
+
+	//cross connection right to left
+	for (int i = 0; i < clothWidth - 1; i++)
+	{
+		for (int j = 0; j < clothHeight - 1; j++)
+		{
+			forces.push_back(new SpringForce(pVector[i + 1 + (j*clothWidth)], pVector[i + ((j + 1)*clothWidth)], clothDistCross, ks, kd, 0));
+		}
+	}
+
+	//cloth constraints.
+	forces.push_back(new WallLeft(pVector, -1, dt));
+	forces.push_back(new WallRight(pVector, 1, dt));
+
+	for (i = 0; i<size; i++)
+	{
+		forces.push_back(new DragForce(pVector[i], 0.99));
+	}
+}
+
 
 /*
 ----------------------------------------------------------------------
@@ -250,17 +533,7 @@ static void post_display ( void )
 	// Write frames if necessary.
 	//cout << "time: " << (level_elapsed_time - level_start_time) << endl;
 	level_elapsed_time = timeGetTime();
-	while(!(((level_elapsed_time - level_start_time) % 33) == 0))
-	{
-		level_elapsed_time = timeGetTime();
-		Sleep(1);
-	}
-	
-	if (((level_elapsed_time - level_start_time) % 1000) <= 33)
-	{
-		cout << "frames per second: " << frame_number << endl;
-		frame_number = 0;
-	}
+
 	frame_number++;
 
 	glutSwapBuffers ();
@@ -531,29 +804,49 @@ int main ( int argc, char ** argv )
 
 	printf("\n\nWelcome to the demo  of Sander Kools and Giedo Mak\n" );
 	printf(" \t please select what you want to view\n");
-	printf(" \t give '1' as input for the cloth simulation \n" );
-	printf(" \t give '2' as input for the angle simulation \n");
+	printf(" \t give '1' as input for the spring force demo \n");
+	printf(" \t give '2' as input for the angle force demo \n");
+	printf(" \t give '3' as input for the circular wire constraint demo \n" );
+	printf(" \t give '4' as input for the line wire constraint demo \n");
+	printf(" \t give '5' as input for the rod constraint demo \n");
+	printf(" \t give '6' as input for the cloth simulation demo \n");
+	printf(" \t give '7' as input for the flag enjoyment \n");
 	int input;
 	cin >> input;
-	if (input == 1 )
+	if ( input == 1)
 	{
-		init_systemCloth();
+		init_systemSpring();
 	}
-	else if (input == 2)
+	else if ( input == 2)
 	{
 		init_systemAngle();
 	}
-	else
+	else if ( input == 3 )
 	{
-		init_systemTest();
+		init_systemCircle();
 	}
+	else if ( input == 4 )
+	{
+		init_systemLine();
+	}
+	else if ( input == 5 )
+	{
+		init_systemRod();
+	}
+	else if (input == 6)
+	{
+		init_systemCloth();
+	}
+	else if (input == 7)
+	{
+		init_systemFlag();
+	}
+
 	dump_frames = 0;
 	frame_number = 0;
 
-	
-
-	win_x = 512;
-	win_y = 512;
+	win_x = 1024;
+	win_y = 1024;
 	open_glut_window ();
 
 	dsim = 0;

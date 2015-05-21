@@ -107,7 +107,6 @@ void AngularForce::apply()
 		restAngle = rs - m_angle;
 	}
 
-
 	Vec2f veldif12 = (m_p1->m_Velocity - m_p2->m_Velocity);
 	Vec2f veldif32 = (m_p3->m_Velocity - m_p2->m_Velocity);
 	

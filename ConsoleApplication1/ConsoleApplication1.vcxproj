@@ -29,6 +29,8 @@
     <ClCompile Include="SpringForce.cpp" />
     <ClCompile Include="TinkerToy.cpp" />
     <ClCompile Include="Wall.cpp" />
+    <ClCompile Include="WallLeft.cpp" />
+    <ClCompile Include="WallRight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AngularForce.h" />
@@ -46,6 +48,8 @@
     <ClInclude Include="RodConstraint.h" />
     <ClInclude Include="SpringForce.h" />
     <ClInclude Include="Wall.h" />
+    <ClInclude Include="WallLeft.h" />
+    <ClInclude Include="WallRight.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Debug\glut32.dll" />

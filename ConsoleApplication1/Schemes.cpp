@@ -111,7 +111,7 @@ void Verlet(std::vector<Force*> forces, std::vector<Constraint*> constraints, st
 		for (int i = 0; i < pVector.size(); i++)
 		{
 			pVector[i]->m_Velocity += ((pVector[i]->m_Force * dt) / pVector[i]->m_mass);
-			pVector[i]->m_Position += pVector[i]->m_Velocity * dt + 0.5 * pVector[i]->m_Force * dt * dt;
+			pVector[i]->m_Position += pVector[i]->m_Velocity * dt + 0.5 * pVector[i]->m_Force / pVector[i]->m_mass * dt * dt;
 			//pVector[i]->m_Velocity = DAMP*pVector[i]->m_Velocity + Vec2f(RAND, RAND) * 0.005;
 		}
 	}
@@ -119,10 +119,11 @@ void Verlet(std::vector<Force*> forces, std::vector<Constraint*> constraints, st
 	{
 		for (int i = 0; i < pVector.size(); i++)
 		{
-			pVector[i]->m_Position = 2 * pVector[i]->m_Position - previousPos[i] + pVector[i]->m_Force * dt * dt;
+			pVector[i]->m_Position = 2 * pVector[i]->m_Position - previousPos[i] + pVector[i]->m_Force/pVector[i]->m_mass * dt * dt;
 		}
 	}
 
+	CalculateForces(forces, constraints, pVector);
 	previousPos.clear();
 	//save previous position
 	for (int i = 0; i < pVector.size(); i++)
