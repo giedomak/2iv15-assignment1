@@ -106,8 +106,8 @@ static void init_systemSpring(void)
 	level_start_time = timeGetTime();
 
 	int particleID = 0;
-	pVector.push_back(new Particle(Vec2f(0.0, 0.7), 1.0f, particleID++));
-	pVector.push_back(new Particle(Vec2f(0.0, 0.1), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(0.0, 0.7), 1.0f, particleID++, 0));
+	pVector.push_back(new Particle(Vec2f(0.0, 0.1), 1.0f, particleID++, 0));
 
 	int i, size = pVector.size();
 
@@ -138,8 +138,8 @@ static void init_systemRod(void)
 	level_start_time = timeGetTime();
 
 	int particleID = 0;
-	pVector.push_back(new Particle(Vec2f(0.0, 0.7), 1.0f, particleID++));
-	pVector.push_back(new Particle(Vec2f(0.0, 0.7-distance), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(0.0, 0.7), 1.0f, particleID++, 0));
+	pVector.push_back(new Particle(Vec2f(0.0, 0.7-distance), 1.0f, particleID++, 0));
 
 	int i, size = pVector.size();
 
@@ -173,8 +173,8 @@ static void init_systemLine(void)
 	level_start_time = timeGetTime();
 
 	int particleID = 0;
-	pVector.push_back(new Particle(Vec2f(0.0, height), 1.0f, particleID++));
-	pVector.push_back(new Particle(Vec2f(0.0, -1.1), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(0.0, height), 1.0f, particleID++, 0));
+	pVector.push_back(new Particle(Vec2f(0.0, -1.1), 1.0f, particleID++, 0));
 
 	int i, size = pVector.size();
 
@@ -226,7 +226,7 @@ static void init_systemCircle(void)
 	level_start_time = timeGetTime();
 
 	int particleID = 0;
-	pVector.push_back(new Particle(Vec2f(0.0, 0.5), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(0.0, 0.5), 1.0f, particleID++, 0));
 
 	int i, size = pVector.size();
 
@@ -257,9 +257,9 @@ static void init_systemAngle(void)
 	level_start_time = timeGetTime();
 
 	int particleID = 0;
-	pVector.push_back(new Particle(Vec2f(-0.2, 0.0), 1.0f, particleID++));
-	pVector.push_back(new Particle(Vec2f( 0.0, 0.4), 1.0f, particleID++));
-	pVector.push_back(new Particle(Vec2f(0.2 , 0.0), 1.0f, particleID++));
+	pVector.push_back(new Particle(Vec2f(-0.2, 0.0), 1.0f, particleID++, 0));
+	pVector.push_back(new Particle(Vec2f( 0.0, 0.4), 1.0f, particleID++, 0));
+	pVector.push_back(new Particle(Vec2f(0.2 , 0.0), 1.0f, particleID++, 0));
 
 	int i, size = pVector.size();
 
@@ -318,7 +318,7 @@ static void init_systemCloth(void)
 			distance = 0.0;
 		}
 
-		pVector.push_back(new Particle(Vec2f(-0.3 + distance, 0.9 - heigthOff), 1.0f, particleID++));
+		pVector.push_back(new Particle(Vec2f(-0.3 + distance, 0.9 - heigthOff), 1.0f, particleID++, 0));
 		distance += 0.2;
 	}
 	// You shoud replace these with a vector generalized forces and one of
@@ -411,26 +411,39 @@ static void init_systemFlag(void)
 
 	level_start_time = timeGetTime();
 
-	int clothWidth = 10;
-	int clothHeight = 6;
+	int clothWidth = 12;
+	int clothHeight = 7;
 	int ks = 2;
 	int kd = 1;
 	cout << "Welcome, please enjoy the flag" << endl;
 	float distance = 0.0;
 	float heigthOff = 0.0;
-	float clothDist = 0.2f;
+	float clothDist = 0.16f;
 	int particleID = 0;
+	int colour = 0;
 
 	for (int i = 0; i < clothWidth*clothHeight; i++)
 	{
 		if (i % clothWidth == 0)
 		{
-			heigthOff += 0.2;
+			heigthOff += clothDist;
 			distance = 0.0;
 		}
 
-		pVector.push_back(new Particle(Vec2f(-0.3 + distance, 0.9 - heigthOff), 1.0f, particleID++));
-		distance += 0.2;
+		if (i < clothWidth * 2)
+		{
+			colour = 0;
+		}
+		else if (i < clothWidth * 4)
+		{
+			colour = 1;
+		}
+		else
+		{
+			colour = 2;
+		}
+		pVector.push_back(new Particle(Vec2f(-0.9 + distance, 0.9 - heigthOff), 1.0f, particleID++, colour));
+		distance += clothDist;
 	}
 	// You shoud replace these with a vector generalized forces and one of
 	// constraints...
@@ -444,22 +457,45 @@ static void init_systemFlag(void)
 
 	for (i = 0; i<size; i++)
 	{
-		forces.push_back(new Gravity(pVector[i], Vec2f(-0.0981, 0.0)));
+		//forces.push_back(new Gravity(pVector[i], Vec2f(0.0, -0.00981)));
 	}
 
-
-	//connect particles to the one next to him vertically
+	//connect particles to the one below him
 	for (int i = 0; i < (clothWidth*clothHeight) - clothWidth; i++)
 	{
-		forces.push_back(new SpringForce(pVector[i], pVector[i + clothWidth], clothDist, ks, kd, 0));
+		if (i < clothWidth * 2)
+		{
+			colour = 0;
+		}
+		else if ( i < clothWidth * 4)
+		{
+			colour = 1;
+		}
+		else
+		{
+			colour = 2;
+		}
+		forces.push_back(new SpringForce(pVector[i], pVector[i + clothWidth], clothDist, ks, kd, colour));
 	}
 
-	//connect particles with the one below him
+	//connect particles with the one next to him 
 	for (int i = 0; i < clothHeight; i++)
 	{
 		for (int j = 0; j < clothWidth - 1; j++)
 		{
-			forces.push_back(new SpringForce(pVector[j + (clothWidth * i)], pVector[j + (clothWidth * i) + 1], clothDist, ks, kd, 0));
+			if (i == 0 || i == 1)
+			{
+				colour = 0;
+			}
+			if (i == 2 || i == 3)
+			{
+				colour = 1;
+			}
+			if (i == 4 || i == 5)
+			{
+				colour = 2;
+			}
+			forces.push_back(new SpringForce(pVector[j + (clothWidth * i)], pVector[j + (clothWidth * i) + 1], clothDist, ks, kd, colour));
 		}
 	}
 
@@ -468,7 +504,19 @@ static void init_systemFlag(void)
 	{
 		for (int j = 0; j < clothWidth - 2; j++)
 		{
-			forces.push_back(new SpringForce(pVector[j + (i*clothWidth)], pVector[j + 2 + (i*clothWidth)], clothDist * 2, ks, kd, 0));
+			if (i == 0 ||i == 1)
+			{
+				colour = 0;
+			}
+			else if (i == 2 || i == 3 )
+			{
+				colour = 1;
+			}
+			else if (i == 4 || i == 5 )
+			{
+				colour = 2;
+			}
+			forces.push_back(new SpringForce(pVector[j + (i*clothWidth)], pVector[j + 2 + (i*clothWidth)], clothDist * 2, ks, kd, colour));
 		}
 	}
 
@@ -477,7 +525,19 @@ static void init_systemFlag(void)
 	{
 		for (int j = 0; j < clothWidth; j++)
 		{
-			forces.push_back(new SpringForce(pVector[j + (clothWidth*i)], pVector[j + (clothWidth*i) + (clothWidth * 2)], clothDist * 2, ks, kd, 0));
+			if (i == 0 || i == 1)
+			{
+				colour = 0;
+			}
+			else if (i == 2 || i == 3)
+			{
+				colour = 1;
+			}
+			else if (i == 4 || i == 5)
+			{
+				colour = 2;
+			}
+			forces.push_back(new SpringForce(pVector[j + (clothWidth*i)], pVector[j + (clothWidth*i) + (clothWidth * 2)], clothDist * 2, ks, kd, colour));
 		}
 	}
 
@@ -487,22 +547,29 @@ static void init_systemFlag(void)
 	{
 		for (int j = 0; j < clothHeight - 1; j++)
 		{
-			forces.push_back(new SpringForce(pVector[i + (j*clothWidth)], pVector[i + 1 + ((j + 1)*clothWidth)], clothDistCross, ks, kd, 0));
-		}
-	}
-
-	//cross connection right to left
-	for (int i = 0; i < clothWidth - 1; i++)
-	{
-		for (int j = 0; j < clothHeight - 1; j++)
-		{
-			forces.push_back(new SpringForce(pVector[i + 1 + (j*clothWidth)], pVector[i + ((j + 1)*clothWidth)], clothDistCross, ks, kd, 0));
+			if (j == 0 || j == 1)
+			{
+				colour = 0;
+			}
+			else if ( j== 2 || j == 3 )
+			{
+				colour = 1;
+			}
+			else
+			{
+				colour = 2;
+			}
+			forces.push_back(new SpringForce(pVector[i + (j*clothWidth)], pVector[i + 1 + ((j + 1)*clothWidth)], clothDistCross, ks, kd, colour));
+			forces.push_back(new SpringForce(pVector[i + 1 + (j*clothWidth)], pVector[i + ((j + 1)*clothWidth)], clothDistCross, ks, kd, colour));
 		}
 	}
 
 	//cloth constraints.
 	forces.push_back(new WallLeft(pVector, -1, dt));
 	forces.push_back(new WallRight(pVector, 1, dt));
+
+	//constraints.push_back(new CircularWireConstraint(pVector[0], Vec2f(-1, 0.7), 0.1));
+	//constraints.push_back(new CircularWireConstraint(pVector[(clothWidth*clothHeight)-clothWidth], Vec2f(-1, -0.2), 0.1));
 
 	for (i = 0; i<size; i++)
 	{
@@ -533,6 +600,17 @@ static void post_display ( void )
 	// Write frames if necessary.
 	//cout << "time: " << (level_elapsed_time - level_start_time) << endl;
 	level_elapsed_time = timeGetTime();
+	while (!(((level_elapsed_time - level_start_time) % 17) == 0))
+	{
+		level_elapsed_time = timeGetTime();
+		Sleep(1);
+	}
+	
+	if (((level_elapsed_time - level_start_time) % 1000) <= 16)
+	{
+		cout << "frames per second: " << frame_number << endl;
+		frame_number = 0;
+	}
 
 	frame_number++;
 

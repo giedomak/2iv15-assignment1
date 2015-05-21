@@ -6,7 +6,7 @@ class Particle
 {
 public:
 
-	Particle(const Vec2f & ConstructPos, float mass, int ID);
+	Particle(const Vec2f & ConstructPos, float mass, int ID, int colour);
 	virtual ~Particle(void);
 
 	void reset();
@@ -21,4 +21,5 @@ public:
 	float m_mass;
 	int m_Number;
 	int m_ID;
+	int m_colour;
 };

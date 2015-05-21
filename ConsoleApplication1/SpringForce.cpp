@@ -7,17 +7,31 @@
 //kd = damping
 //dist = resting distance
 SpringForce::SpringForce(Particle *p1, Particle * p2, double dist, double ks, double kd, int colour) :
-  m_p1(p1), m_p2(p2), m_dist(dist), m_ks(ks), m_kd(kd) {}
+  m_p1(p1), m_p2(p2), m_dist(dist), m_ks(ks), m_kd(kd), m_colour(colour) {}
 
 
 void SpringForce::draw()
 {
-  glBegin( GL_LINES );
-  glColor3f(1, 0, 0);
-  glVertex2f( m_p1->m_Position[0], m_p1->m_Position[1] );
-  glColor3f(1, 0, 0);
-  glVertex2f( m_p2->m_Position[0], m_p2->m_Position[1] );
-  glEnd();
+	glBegin(GL_LINES);
+	if (m_colour == 0)
+	{
+		glColor3f(1, 0, 0);
+	}
+	else if (m_colour == 1)
+	{
+		glColor3f(1, 1, 1);
+	}
+	else if (m_colour == 2)
+	{
+		glColor3f(0, 0, 1);
+	}
+	else if (m_colour == 3)
+	{
+		glColor3f(0, 0, 0);
+	}
+	glVertex2f( m_p1->m_Position[0], m_p1->m_Position[1] );
+	glVertex2f( m_p2->m_Position[0], m_p2->m_Position[1] );
+	glEnd();
 }
 
 void SpringForce::apply()
